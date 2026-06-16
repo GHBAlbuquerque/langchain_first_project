@@ -17,13 +17,13 @@ agent = create_agent( #inherits from runnable!
     ), tools=[TavilySearch()]
 )
 
-input = "What is the capital of Aruba?"
-answer = agent.invoke({"messages": [{"role": "user", "content": input}]})
+# input = "What is the capital of Aruba?"
+# answer = agent.invoke({"messages": [{"role": "user", "content": input}]})
 
-#print(answer)
-print(answer["messages"][-1].content)
+# print(answer)
+# print(answer["messages"][-1].content)
 
-second_input = "What is the current weather in Oranjestad, Aruba?"
+# second_input = "What is the current weather in Oranjestad, Aruba?"
 
-second_answer = agent.invoke({"messages": [{"role": "user", "content": second_input}]})
-print(second_answer["messages"][-1].content)
+# second_answer = agent.invoke({"messages": [{"role": "user", "content": second_input}]})
+# print(second_answer["messages"][-1].content)
