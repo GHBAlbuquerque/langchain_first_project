@@ -11,3 +11,6 @@ wheels/
 .env
 
 .langgraph_api
+
+#db
+*.db*

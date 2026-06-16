@@ -1,13 +1,15 @@
+import sqlite3
 from langchain.chat_models import init_chat_model
 from langchain.agents import create_agent
 from langchain_core.runnables import RunnableConfig
 from langchain_tavily import TavilySearch
-from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.checkpoint.sqlite import SqliteSaver
 from dotenv import load_dotenv
 
 load_dotenv()
 
-checkpoint = InMemorySaver()
+conn = sqlite3.connect("checkpoints.db", check_same_thread=False)
+checkpoint= SqliteSaver(conn)
 
 model = init_chat_model( "openai:gpt-5-nano")
 
