@@ -3,7 +3,7 @@
         "."
     ],
     "graphs": {
-        "agent": "./agent.py:agent"
+        "agent": "./agent_persistent_checkpoint.py:agent"
     },
     "env": ".env"
 }
