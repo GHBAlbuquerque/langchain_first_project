@@ -7,7 +7,6 @@ load_dotenv()
 
 # example tool
 
-
 @tool
 def delivery_fee_calculator(weight_kg: float, distance_km: float) -> float: #typehint
     #docstrings
