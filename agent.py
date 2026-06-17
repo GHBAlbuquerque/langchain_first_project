@@ -12,7 +12,7 @@ load_dotenv()
 conn = sqlite3.connect("checkpoints.db", check_same_thread=False)
 checkpoint= SqliteSaver(conn)
 
-model = init_chat_model( "openai:gpt-5-nano")
+model = init_chat_model("openai:gpt-5.4-mini")
 
 agent = create_agent( #inherits from runnable!
     model=model,
