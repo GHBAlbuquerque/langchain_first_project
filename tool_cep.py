@@ -1,11 +1,24 @@
 from langchain.chat_models import init_chat_model
 from langchain.agents import create_agent
+from langchain.agents.middleware import wrap_tool_call
 from langchain.tools import tool
+from langchain_core.messages import ToolMessage
 import requests
 from pydantic import BaseModel, Field, field_validator
 from dotenv import load_dotenv
 
 load_dotenv()
+
+@wrap_tool_call
+async def handle_error(request, handler):
+    try:
+        return await handler(request)
+    except Exception as e:
+        tool_call_id = request.tool_call['id']
+        return ToolMessage(
+            content=f"Error when executing {request.tool_call['name']}: {str(e)}",
+            tool_call_id=tool_call_id
+        )
 
 class CepInput(BaseModel):
     cep: str = Field(..., description="Brazilian zipcode that takes only numbers", max_length=8, min_length=8) #... indicates a field is mandatory
@@ -17,7 +30,6 @@ class CepInput(BaseModel):
         if not clean_cep.isdigit() or len(v) != 8:
             raise ValueError("Invalid zipcode")
         return v
-    
     
     
 #@tool(args_schema=CepInput)
@@ -33,7 +45,7 @@ def search_zipcode(input_data: CepInput) -> dict:
         str: Zipcode information
     """
     
-    url = f"https://viacep.com.br/ws/{input_data.cep}/json/"
+    url = f"https://viace.com.br/ws/{input_data.cep}/json/"
     response = requests.get(url)
     data = response.json()
     
@@ -46,9 +58,10 @@ agent = create_agent( #inherits from runnable!
     model=model,
     system_prompt=(
         "You are a helpful assistant. For questions requiring real-time, current, "
-        "or live information (such as current weather), you MUST use your tools "
+        "or live information (such as an address or current weather), you MUST use your tools "
         "immediately to find the answer. Do not ask the user for permission to use tools."
         "If you don't know the answer even after researching, just say you don't know."
     ), 
-    tools=(search_zipcode,)
+    tools=(search_zipcode,),
+    middleware=(handle_error,)
 )
