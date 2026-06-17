@@ -4,6 +4,7 @@ from langchain.agents import create_agent
 from langchain_core.runnables import RunnableConfig
 from langchain_tavily import TavilySearch
 from langgraph.checkpoint.sqlite import SqliteSaver
+from langchain.agents.middleware import SummarizationMiddleware
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -23,9 +24,14 @@ agent = create_agent( #inherits from runnable!
     ), 
     tools=[TavilySearch()],
     checkpointer=checkpoint,
+    middleware=[SummarizationMiddleware(
+            model=model, #does not have to be the same as the agent model
+            trigger=("messages", 6), #decides the qt of token, messages or contexts windows to trigger a summarization (token is the best but fpr the example we use message)
+            keep=("messages", 2) #how much recent conversation history is preserved exactly as it was written, while the older messages get compressed into a summary
+        )],
 )
 
-config = RunnableConfig(configurable= {"thread_id": "1"})
+config = RunnableConfig(configurable= {"thread_id": "2"})
 
 print("Agent is working.")
 while True:
