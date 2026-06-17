@@ -3,7 +3,7 @@
         "."
     ],
     "graphs": {
-        "agent": "./tool.py:agent"
+        "agent": "./tool_cep.py:agent"
     },
     "env": ".env"
 }
