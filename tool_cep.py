@@ -2,12 +2,27 @@ from langchain.chat_models import init_chat_model
 from langchain.agents import create_agent
 from langchain.tools import tool
 import requests
+from pydantic import BaseModel, Field, field_validator
 from dotenv import load_dotenv
 
 load_dotenv()
+
+class CepInput(BaseModel):
+    cep: str = Field(..., description="Brazilian zipcode that takes only numbers", max_length=8, min_length=8) #... indicates a field is mandatory
     
+    @field_validator("cep")
+    @classmethod
+    def validate(cls, v: str) -> str:
+        clean_cep=v.replace("-", "").strip()
+        if not clean_cep.isdigit() or len(v) != 8:
+            raise ValueError("Invalid zipcode")
+        return v
+    
+    
+    
+#@tool(args_schema=CepInput)
 @tool
-def search_zipcode(cep: str) -> str:
+def search_zipcode(input_data: CepInput) -> dict:
     """
     Gets information of a brazilian zipcode.
     
@@ -18,7 +33,7 @@ def search_zipcode(cep: str) -> str:
         str: Zipcode information
     """
     
-    url = f"https://viacep.com.br/ws/{cep}/json/"
+    url = f"https://viacep.com.br/ws/{input_data.cep}/json/"
     response = requests.get(url)
     data = response.json()
     
